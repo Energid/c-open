@@ -62,6 +62,15 @@ int co_bitmap_get (uint32_t * bm, int bit);
  */
 int co_bitmap_next (uint32_t * bm, int bit);
 
+/**
+ * Count the number of set bits in a 128-bit bitmap
+ *
+ * This function returns the total number of bits that are set in the bitmap.
+
+ * @param bm            bitmap
+ */
+int co_bitmap_count (uint32_t * bm);
+
 #ifdef __cplusplus
 }
 #endif

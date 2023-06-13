@@ -34,9 +34,11 @@ if (CMAKE_PROJECT_NAME STREQUAL CANOPEN)
 
   # Default to installing in build directory
   if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-    set(CMAKE_INSTALL_PREFIX ${CANOPEN_BINARY_DIR}/install
+    set(CMAKE_INSTALL_PREFIX ${CANOPEN_SOURCE_DIR}/install
       CACHE PATH "Default install path" FORCE)
   endif()
+
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
 
   message(STATUS "Current build type is: ${CMAKE_BUILD_TYPE}")
   message(STATUS "Current install path is: ${CMAKE_INSTALL_PREFIX}")

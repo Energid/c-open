@@ -63,3 +63,15 @@ int co_bitmap_next (uint32_t * bm, int bit)
 
    return 0;
 }
+
+int co_bitmap_count (uint32_t * bm)
+{
+   int ix, cnt = 0;
+
+   for (ix = 0; ix < 4; ix++)
+   {
+      cnt += __builtin_popcount (bm[ix]);
+   }
+
+   return cnt;
+}

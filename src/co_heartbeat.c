@@ -14,10 +14,10 @@
  ********************************************************************/
 
 #ifdef UNIT_TEST
-#define os_channel_send        mock_os_channel_send
-#define os_tick_current        mock_os_tick_current
-#define os_tick_from_us        mock_os_tick_from_us
-#define co_emcy_tx             mock_co_emcy_tx
+#define os_channel_send mock_os_channel_send
+#define os_tick_current mock_os_tick_current
+#define os_tick_from_us mock_os_tick_from_us
+#define co_emcy_tx      mock_co_emcy_tx
 #endif
 
 #include "co_heartbeat.h"
@@ -104,6 +104,7 @@ uint32_t co_od1016_fn (
 int co_heartbeat_rx (co_net_t * net, uint8_t node, void * msg, size_t dlc)
 {
    int ix;
+   uint8_t * data = (uint8_t *)msg;
 
    co_bitmap_set (net->nodes, node);
 
@@ -115,7 +116,7 @@ int co_heartbeat_rx (co_net_t * net, uint8_t node, void * msg, size_t dlc)
 
          heartbeat->timestamp = os_tick_current();
          heartbeat->is_alive  = true;
-         LOG_DEBUG (CO_HEARTBEAT_LOG, "node %d got heartbeat\n", heartbeat->node);
+         heartbeat->state     = data[0];
       }
    }
 
@@ -144,16 +145,16 @@ int co_heartbeat_timer (co_net_t * net, os_tick_t now)
          switch (net->state)
          {
          case STATE_STOP:
-            state = 4;
+            state = CO_STATE_STOPPED;
             break;
          case STATE_OP:
-            state = 5;
+            state = CO_STATE_OPERATIONAL;
             break;
          case STATE_PREOP:
-            state = 127;
+            state = CO_STATE_PRE_OPERATIONAL;
             break;
          default:
-            state = 0;
+            state = CO_STATE_BOOT_UP;
             break;
          }
 
@@ -180,6 +181,7 @@ int co_heartbeat_timer (co_net_t * net, os_tick_t now)
       {
          /* Expired */
          heartbeat->is_alive = false;
+         heartbeat->state    = CO_STATE_BOOT_UP;
          co_bitmap_clear (net->nodes, heartbeat->node);
          LOG_ERROR (
             CO_HEARTBEAT_LOG,

@@ -195,6 +195,59 @@ void co_nmt (co_client_t * client, co_nmt_cmd_t cmd, uint8_t node)
    os_channel_send (net->channel, CO_FUNCTION_NMT, data, sizeof (data));
 }
 
+co_nmt_state_t co_nmt_check (co_client_t * client, uint8_t node)
+{
+   co_net_t * net = client->net;
+   int ix;
+   co_nmt_state_t state;
+
+   if (node == 0)
+   {
+      state = CO_STATE_UNKNOWN;
+      for (ix = 0; ix < MAX_HEARTBEATS; ++ix)
+      {
+         if (net->heartbeat[ix].is_alive)
+         {
+            switch (state)
+            {
+            case CO_STATE_UNKNOWN:
+            case CO_STATE_OPERATIONAL:
+               state = net->heartbeat[ix].state;
+               break;
+            case CO_STATE_PRE_OPERATIONAL:
+               if (net->heartbeat[ix].state != CO_STATE_OPERATIONAL)
+               {
+                  state = net->heartbeat[ix].state;
+               }
+               break;
+            case CO_STATE_STOPPED:
+               if (net->heartbeat[ix].state == CO_STATE_BOOT_UP)
+               {
+                  state = net->heartbeat[ix].state;
+               }
+               break;
+            case CO_STATE_BOOT_UP:
+               break;
+            }
+         }
+      }
+   }
+   else
+   {
+      state = CO_STATE_UNKNOWN;
+      for (ix = 0; ix < MAX_HEARTBEATS; ++ix)
+      {
+         if (net->heartbeat[ix].node == node && net->heartbeat[ix].is_alive)
+         {
+            state = net->heartbeat[ix].state;
+            break;
+         }
+      }
+   }
+
+   return state;
+}
+
 /* TODO: issue sync job? */
 void co_sync (co_client_t * client)
 {
@@ -212,6 +265,24 @@ uint8_t co_node_next (co_client_t * client, uint8_t node)
       return 0;
 
    return co_bitmap_next (net->nodes, node);
+}
+
+int32_t co_node_count (co_client_t * client)
+{
+   co_net_t * net = client->net;
+
+   return co_bitmap_count (net->nodes);
+}
+
+int32_t co_node_check (co_client_t * client, uint8_t node)
+{
+   if (node < 1 || node > 127)
+   {
+      return 0;
+   }
+
+   co_net_t * net = client->net;
+   return co_bitmap_get (net->nodes, node);
 }
 
 uint8_t co_node_id_get (co_net_t * net)
@@ -439,7 +510,7 @@ co_net_t * co_init (const char * canif, const co_cfg_t * cfg)
    if (net->mbox == NULL)
       goto error2;
 
-   tmr = os_timer_create (1000, co_timer, net, false);
+   tmr = os_timer_create (50, co_timer, net, false);
    if (tmr == NULL)
       goto error3;
 

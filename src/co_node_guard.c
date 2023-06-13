@@ -14,10 +14,10 @@
  ********************************************************************/
 
 #ifdef UNIT_TEST
-#define os_channel_send        mock_os_channel_send
-#define os_channel_receive     mock_os_channel_receive
-#define os_tick_current        mock_os_tick_current
-#define os_tick_from_us        mock_os_tick_from_us
+#define os_channel_send    mock_os_channel_send
+#define os_channel_receive mock_os_channel_receive
+#define os_tick_current    mock_os_tick_current
+#define os_tick_from_us    mock_os_tick_from_us
 #endif
 
 #include "co_node_guard.h"
@@ -93,16 +93,16 @@ int co_node_guard_rx (co_net_t * net, uint32_t id, void * msg, size_t dlc)
       switch (net->state)
       {
       case STATE_STOP:
-         state = 4;
+         state = CO_STATE_STOPPED;
          break;
       case STATE_OP:
-         state = 5;
+         state = CO_STATE_OPERATIONAL;
          break;
       case STATE_PREOP:
-         state = 127;
+         state = CO_STATE_PRE_OPERATIONAL;
          break;
       default:
-         state = 0;
+         state = CO_STATE_BOOT_UP;
          break;
       }
 

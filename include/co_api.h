@@ -150,6 +150,16 @@ typedef enum co_state
    STATE_LAST
 } co_state_t;
 
+/** NMT states */
+typedef enum co_nmt_state
+{
+   CO_STATE_BOOT_UP         = 0x00,
+   CO_STATE_STOPPED         = 0x04,
+   CO_STATE_OPERATIONAL     = 0x05,
+   CO_STATE_PRE_OPERATIONAL = 0x7f,
+   CO_STATE_UNKNOWN         = 0xff
+} co_nmt_state_t;
+
 /** NMT commands */
 typedef enum co_nmt_cmd
 {
@@ -389,6 +399,29 @@ CO_EXPORT co_client_t * co_client_init (co_net_t * net);
 CO_EXPORT uint8_t co_node_next (co_client_t * client, uint8_t node);
 
 /**
+ * Count number of active nodes.
+ *
+ * This function returns the number of active nodes.
+ *
+ * @param client        client handle
+ *
+ * @return number of active nodes
+ */
+CO_EXPORT int32_t co_node_count (co_client_t * client);
+
+/**
+ * Check if the given node is active.
+ *
+ * This function returns whether the given node is active.
+ *
+ * @param client        client handle
+ * @param node          node ID
+ *
+ * @return 1 if active, 0 otherwise.
+ */
+CO_EXPORT int32_t co_node_check (co_client_t * client, uint8_t node);
+
+/**
  * Get active node ID.
  *
  * This function returns this node's active node ID, i.e. the
@@ -423,6 +456,18 @@ CO_EXPORT void * co_cb_arg_get (co_net_t * net);
  * @param node          node ID, or 0 for broadcast
  */
 CO_EXPORT void co_nmt (co_client_t * client, co_nmt_cmd_t cmd, uint8_t node);
+
+/**
+ * Check NMT state.
+ *
+ * This function checks the NMT state of the given node.
+ *
+ * @param client        client handle
+ * @param node          node ID, or 0 for whole network
+ *
+ * @return NMT state of the given node.
+ */
+CO_EXPORT co_nmt_state_t co_nmt_check (co_client_t * client, uint8_t node);
 
 /**
  * Send SYNC message.

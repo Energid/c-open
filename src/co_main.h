@@ -170,6 +170,7 @@ typedef struct co_heartbeat
    bool is_alive;
    uint16_t time;
    os_tick_t timestamp;
+   co_nmt_state_t state;
 } co_heartbeat_t;
 
 /** Node guarding state */
@@ -213,7 +214,7 @@ typedef struct co_sync
 typedef struct co_emcy
 {
    uint32_t cobid;                   /**< EMCY COB ID */
-   os_tick_t timestamp;               /**< Timestamp of last EMCY */
+   os_tick_t timestamp;              /**< Timestamp of last EMCY */
    uint32_t bus_off_timestamp;       /**< Timestamp of bus-off event */
    uint16_t inhibit;                 /**< Inhibit time [100 us] */
    uint8_t error;                    /**< Error register */
@@ -226,26 +227,26 @@ typedef struct co_emcy
 /** CANopen network state */
 struct co_net
 {
-   os_channel_t * channel;      /**< CAN channel */
-   int bitrate;                 /**< CAN bitrate (bits per second) */
-   os_mbox_t * mbox;            /**< Mailbox for job submission */
-   co_job_type_t job_periodic;  /**< Static message for periodic job */
-   co_job_type_t job_rx;        /**< Static message for rx job */
-   co_job_t job_sdo_server;     /**< Current SDO server job */
-   co_job_t * job_client;       /**< Pointer to current client job */
-   uint32_t nodes[4];           /**< Discovered nodes. 128-bit bitmap */
-   uint8_t node;                /**< Node ID for this node */
-   co_emcy_t emcy;              /**< EMCY state */
-   co_sync_t sync;              /**< SYNC state */
-   co_state_t state;            /**< NMT state */
-   os_tick_t hb_timestamp;       /**< Heartbeat producer timestamp */
-   uint32_t hb_time;            /**< Heartbeat producer time */
-   os_tick_t sync_timestamp;     /**< Timestamp of last SYNC */
-   uint32_t sync_window;        /**< Synchronous window length */
-   uint32_t restart_ms;         /**< Delay before attempting to recover from bus-off */
-   co_pdo_t pdo_tx[MAX_TX_PDO]; /**< TPDOs */
-   co_pdo_t pdo_rx[MAX_RX_PDO]; /**< RPDOs */
-   co_node_guard_t node_guard;  /**< Node guarding state */
+   os_channel_t * channel;     /**< CAN channel */
+   int bitrate;                /**< CAN bitrate (bits per second) */
+   os_mbox_t * mbox;           /**< Mailbox for job submission */
+   co_job_type_t job_periodic; /**< Static message for periodic job */
+   co_job_type_t job_rx;       /**< Static message for rx job */
+   co_job_t job_sdo_server;    /**< Current SDO server job */
+   co_job_t * job_client;      /**< Pointer to current client job */
+   uint32_t nodes[4];          /**< Discovered nodes. 128-bit bitmap */
+   uint8_t node;               /**< Node ID for this node */
+   co_emcy_t emcy;             /**< EMCY state */
+   co_sync_t sync;             /**< SYNC state */
+   co_state_t state;           /**< NMT state */
+   os_tick_t hb_timestamp;     /**< Heartbeat producer timestamp */
+   uint32_t hb_time;           /**< Heartbeat producer time */
+   os_tick_t sync_timestamp;   /**< Timestamp of last SYNC */
+   uint32_t sync_window;       /**< Synchronous window length */
+   uint32_t restart_ms; /**< Delay before attempting to recover from bus-off */
+   co_pdo_t pdo_tx[MAX_TX_PDO];              /**< TPDOs */
+   co_pdo_t pdo_rx[MAX_RX_PDO];              /**< RPDOs */
+   co_node_guard_t node_guard;               /**< Node guarding state */
    co_heartbeat_t heartbeat[MAX_HEARTBEATS]; /**< Heartbeat consumer state */
    uint8_t number_of_errors;                 /**< Number of active errors */
    uint32_t errors[MAX_ERRORS];              /**< List of active errors */

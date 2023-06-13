@@ -14,12 +14,12 @@
  ********************************************************************/
 
 #ifdef UNIT_TEST
-#define os_channel_send        mock_os_channel_send
-#define os_tick_current        mock_os_tick_current
-#define os_tick_from_us        mock_os_tick_from_us
-#define co_obj_find            mock_co_obj_find
-#define co_entry_find          mock_co_entry_find
-#define co_emcy_tx             mock_co_emcy_tx
+#define os_channel_send mock_os_channel_send
+#define os_tick_current mock_os_tick_current
+#define os_tick_from_us mock_os_tick_from_us
+#define co_obj_find     mock_co_obj_find
+#define co_entry_find   mock_co_entry_find
+#define co_emcy_tx      mock_co_emcy_tx
 #endif
 
 #include "co_pdo.h"
@@ -634,7 +634,7 @@ void co_pdo_trigger_with_obj (co_net_t * net, uint16_t index, uint8_t subindex)
       co_pdo_t * pdo = &net->pdo_tx[ix];
       if (pdo->cobid & CO_COBID_INVALID)
          continue;
-         
+
       for (n = 0; n < pdo->number_of_mappings; n++)
       {
          if (pdo->entries[n] == entry)
