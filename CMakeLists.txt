@@ -22,9 +22,6 @@ project (CANOPEN VERSION 0.1.0)
 if (CMAKE_PROJECT_NAME STREQUAL CANOPEN)
   include(CTest)
 
-  # Make option visible in ccmake, cmake-gui
-  option (BUILD_SHARED_LIBS "Build shared library" OFF)
-
   # Default to release build with debug info
   if (NOT CMAKE_BUILD_TYPE)
     set (CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING
@@ -135,7 +132,7 @@ configure_file (
 
 # Add platform-dependent targets early, so they can be configured by
 # platform
-add_library(canopen "")
+add_library(canopen STATIC "")
 add_executable (slave "")
 add_executable (slaveinfo "")
 
