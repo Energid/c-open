@@ -112,10 +112,9 @@ void co_main (void * arg)
 {
    co_net_t * net = arg;
    co_job_t * job;
-   bool running = true;
 
    /* Main loop */
-   while (running)
+   while (net->running)
    {
       os_mbox_fetch (net->mbox, (void **)&job, OS_WAIT_FOREVER);
 
@@ -143,7 +142,7 @@ void co_main (void * arg)
          co_emcy_job (net, job);
          break;
       case CO_JOB_EXIT:
-         running = false;
+         net->running = false;
          break;
       default:
          CC_ASSERT (0);
@@ -472,10 +471,15 @@ co_client_t * co_client_init (co_net_t * net)
    return client;
 }
 
+void co_client_terminate (co_client_t * client)
+{
+   os_sem_destroy (client->sem);
+   free (client);
+}
+
 co_net_t * co_init (const char * canif, const co_cfg_t * cfg)
 {
    co_net_t * net;
-   os_timer_t * tmr;
 
    net = calloc (1, sizeof (*net));
    if (net == NULL)
@@ -510,28 +514,49 @@ co_net_t * co_init (const char * canif, const co_cfg_t * cfg)
    if (net->mbox == NULL)
       goto error2;
 
-   tmr = os_timer_create (50, co_timer, net, false);
-   if (tmr == NULL)
+   net->timer = os_timer_create (50, co_timer, net, false);
+   if (net->timer == NULL)
       goto error3;
 
    net->channel = os_channel_open (canif, co_can_callback, net);
    if (net->channel == NULL)
       goto error4;
 
-   if (os_thread_create ("co_thread", CO_THREAD_PRIO, CO_THREAD_STACK_SIZE, co_main, net) == NULL)
+   net->running = true;
+   net->thread  = os_thread_create (
+      "co_thread",
+      CO_THREAD_PRIO,
+      CO_THREAD_STACK_SIZE,
+      co_main,
+      net);
+   if (net->thread == NULL)
       goto error4;
 
-   os_timer_start (tmr);
+   os_timer_start (net->timer);
    co_nmt_init (net);
 
    return net;
 
 error4:
-   os_timer_destroy (tmr);
+   os_timer_destroy (net->timer);
 error3:
    os_mbox_destroy (net->mbox);
 error2:
    free (net);
 error1:
    return NULL;
+}
+
+void co_terminate (co_net_t * net)
+{
+   os_timer_stop (net->timer);
+
+   net->running = false;
+   pthread_join (*net->thread, NULL);
+
+   os_channel_close (net->channel);
+   os_timer_destroy (net->timer);
+   os_mbox_destroy (net->mbox);
+
+   free (net);
 }

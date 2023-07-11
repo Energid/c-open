@@ -230,6 +230,9 @@ struct co_net
    os_channel_t * channel;     /**< CAN channel */
    int bitrate;                /**< CAN bitrate (bits per second) */
    os_mbox_t * mbox;           /**< Mailbox for job submission */
+   os_timer_t * timer;         /**< Timer */
+   os_thread_t * thread;       /**< Main thread */
+   bool running;               /**< Flag for main thread */
    co_job_type_t job_periodic; /**< Static message for periodic job */
    co_job_type_t job_rx;       /**< Static message for rx job */
    co_job_t job_sdo_server;    /**< Current SDO server job */

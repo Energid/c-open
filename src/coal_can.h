@@ -38,6 +38,7 @@ typedef struct os_channel_state
 } os_channel_state_t;
 
 os_channel_t * os_channel_open (const char * name, void * callback, void * arg);
+void os_channel_close (os_channel_t * channel);
 int os_channel_send (
    os_channel_t * channel,
    uint32_t id,

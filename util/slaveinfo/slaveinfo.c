@@ -78,8 +78,6 @@ int slaveinfo (const char * canif, uint8_t node, int bitrate)
       {1},
    };
 
-   int8_t syncType = 0;
-
    cfg.node    = node;
    cfg.bitrate = bitrate;
    cfg.od      = od_none;
@@ -144,6 +142,7 @@ int slaveinfo (const char * canif, uint8_t node, int bitrate)
    uint8_t u8Val, ix;
    uint16_t u16Val;
    uint32_t u32Val;
+   int8_t syncType = 0;
 
    // start canopen layer
    for (ix = 0; ix < NELEMENTS (slaves); ++ix)
@@ -160,7 +159,6 @@ int slaveinfo (const char * canif, uint8_t node, int bitrate)
       }
 
       // SYNC
-      syncType = 1;
       if (syncType == 0) // master generated
       {
          u32Val = 0x40000080;
@@ -333,16 +331,16 @@ int slaveinfo (const char * canif, uint8_t node, int bitrate)
             pdoVal.targetPosition = pdoVal.actualPosition;
          }
 
-         printf (
-            "%lu.%lu: %04x, %d, %d | %04x, %d | %d\n",
-            now / 1000000000,
-            now % 1000000000,
-            pdoVal.statusWord,
-            pdoVal.actualPosition,
-            pdoVal.actualTorque,
-            pdoVal.controlWord,
-            pdoVal.targetPosition,
-            cnt);
+         // printf (
+         //    "%lu.%lu: %04x, %d, %d | %04x, %d | %d\n",
+         //    now / 1000000000,
+         //    now % 1000000000,
+         //    pdoVal.statusWord,
+         //    pdoVal.actualPosition,
+         //    pdoVal.actualTorque,
+         //    pdoVal.controlWord,
+         //    pdoVal.targetPosition,
+         //    cnt);
          step += 2000;
       }
       else
@@ -383,11 +381,17 @@ int slaveinfo (const char * canif, uint8_t node, int bitrate)
 
       // heartbeat
       {
+         // master
+         co_od1016_fn (net, OD_EVENT_RESTORE, NULL, NULL, ix + 1, NULL);
+
          // slave, 0ms
          u16Val = 0;
          co_sdo_write (client, slaves[ix].node, 0x1017, 0, &u16Val, sizeof (u16Val));
       }
    }
+
+   co_client_terminate (client);
+   co_terminate (net);
 
    return 0;
 }

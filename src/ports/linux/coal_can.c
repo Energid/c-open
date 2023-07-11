@@ -58,7 +58,7 @@ static void os_channel_rx (void * arg)
       return;
    }
 
-   for (;;)
+   while (!channel->exit)
    {
       nfds = epoll_wait (epollfd, events, 1, -1);
       if (nfds == -1)
@@ -117,9 +117,18 @@ os_channel_t * os_channel_open (const char * name, void * callback, void * arg)
 
    channel->callback = callback;
    channel->arg      = arg;
+   channel->exit     = false;
 
-   os_thread_create ("co_rx", 5, 1024, os_channel_rx, channel);
+   channel->thread = os_thread_create ("co_rx", 5, 1024, os_channel_rx, channel);
    return channel;
+}
+
+void os_channel_close (os_channel_t * channel)
+{
+   channel->exit = true;
+   pthread_join (*channel->thread, NULL);
+   close (channel->handle);
+   free (channel);
 }
 
 int os_channel_send (os_channel_t * channel, uint32_t id, const void * data, size_t dlc)

@@ -20,11 +20,17 @@
 extern "C" {
 #endif
 
+#include <pthread.h>
+
 #define OS_CHANNEL
+
+typedef pthread_t os_thread_t;
 
 typedef struct
 {
    int handle;
+   os_thread_t * thread;
+   bool exit;
    void (*callback) (void * arg);
    void * arg;
 } os_channel_t;

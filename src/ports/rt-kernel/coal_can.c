@@ -37,8 +37,8 @@ os_channel_t * os_channel_open (const char * name, void * callback, void * arg)
 {
    os_channel_t * channel = malloc (sizeof (*channel));
    can_filter_t filter    = {
-      .id   = 0xFFFFFFFF,
-      .mask = 0,
+         .id   = 0xFFFFFFFF,
+         .mask = 0,
    };
 
    /* Create file descriptor for CAN bus */
@@ -61,6 +61,10 @@ os_channel_t * os_channel_open (const char * name, void * callback, void * arg)
    can_filter (channel->handle, &filter);
 
    return channel;
+}
+
+void os_channel_close (os_channel_t * channel)
+{
 }
 
 int os_channel_send (os_channel_t * channel, uint32_t id, const void * data, size_t dlc)

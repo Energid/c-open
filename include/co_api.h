@@ -355,6 +355,15 @@ typedef struct co_cfg
 CO_EXPORT co_net_t * co_init (const char * canif, const co_cfg_t * cfg);
 
 /**
+ * Terminate CANopen stack
+ *
+ * This function terminates the stack.
+ *
+ * @param net           network handle
+ */
+CO_EXPORT void co_terminate (co_net_t * net);
+
+/**
  * Initialise client
  *
  * This function initialises a client. The client is used to submit
@@ -365,6 +374,15 @@ CO_EXPORT co_net_t * co_init (const char * canif, const co_cfg_t * cfg);
  * @return client handle
  */
 CO_EXPORT co_client_t * co_client_init (co_net_t * net);
+
+/**
+ * Terminate client
+ *
+ * This function terminates a client.
+ *
+ * @param client        client handle
+ */
+CO_EXPORT void co_client_terminate (co_client_t * client);
 
 /**
  * Get next active node ID.
