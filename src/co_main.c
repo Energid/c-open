@@ -116,7 +116,11 @@ void co_main (void * arg)
    /* Main loop */
    while (net->running)
    {
-      os_mbox_fetch (net->mbox, (void **)&job, OS_WAIT_FOREVER);
+      job = NULL;
+      os_mbox_fetch (net->mbox, (void **)&job, 50);
+
+      if (job == NULL)
+         continue;
 
       switch (job->type)
       {

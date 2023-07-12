@@ -60,7 +60,7 @@ static void os_channel_rx (void * arg)
 
    while (!channel->exit)
    {
-      nfds = epoll_wait (epollfd, events, 1, -1);
+      nfds = epoll_wait (epollfd, events, 1, 50);
       if (nfds == -1)
       {
          if (errno == EINTR)
