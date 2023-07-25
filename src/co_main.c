@@ -260,6 +260,16 @@ void co_sync (co_client_t * client)
    os_channel_send (net->channel, CO_FUNCTION_SYNC, NULL, 0);
 }
 
+void co_sync_send (co_client_t * client)
+{
+   co_net_t * net = client->net;
+
+   if (net->state != STATE_PREOP && net->state != STATE_OP)
+      return;
+
+   os_channel_send (net->channel, CO_FUNCTION_SYNC, NULL, 0);
+}
+
 uint8_t co_node_next (co_client_t * client, uint8_t node)
 {
    co_net_t * net = client->net;

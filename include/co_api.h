@@ -497,6 +497,15 @@ CO_EXPORT co_nmt_state_t co_nmt_check (co_client_t * client, uint8_t node);
 CO_EXPORT void co_sync (co_client_t * client);
 
 /**
+ * Send SYNC message.
+ *
+ * This function broadcasts a SYNC message.
+ *
+ * @param client        client handle
+ */
+CO_EXPORT void co_sync_send (co_client_t * client);
+
+/**
  * Trigger event-based PDOs
  *
  * This function triggers transmission of all event-based PDOs.
