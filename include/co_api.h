@@ -506,6 +506,15 @@ CO_EXPORT void co_sync (co_client_t * client);
 CO_EXPORT void co_sync_send (co_client_t * client);
 
 /**
+ * Send PDO message.
+ *
+ * This function transmit all PDOs.
+ *
+ * @param client        client handle
+ */
+CO_EXPORT void co_pdo_send (co_client_t * client);
+
+/**
  * Trigger event-based PDOs
  *
  * This function triggers transmission of all event-based PDOs.

@@ -308,6 +308,28 @@ void * co_cb_arg_get (co_net_t * net)
    return net->cb_arg;
 }
 
+void co_pdo_send (co_client_t * client)
+{
+   co_net_t * net = client->net;
+
+   if (net->state != STATE_OP)
+      return;
+
+   size_t dlc;
+   unsigned int ix;
+   for (ix = 0; ix < MAX_TX_PDO; ix++)
+   {
+      co_pdo_t * pdo = &net->pdo_tx[ix];
+
+      if (pdo->cobid & CO_COBID_INVALID)
+         continue;
+
+      co_pdo_pack (net, pdo);
+      dlc = CO_BYTELENGTH (pdo->bitlength);
+      os_channel_send (net->channel, pdo->cobid & CO_EXTID_MASK, &pdo->frame, dlc);
+   }
+}
+
 int co_pdo_event (co_client_t * client)
 {
    co_net_t * net = client->net;
