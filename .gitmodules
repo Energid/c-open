@@ -1,5 +1,5 @@
 [submodule "cmake/tools"]
 	path = cmake/tools
 	url = https://github.com/Energid/cmake-tools.git
-	branch = chli-canopen_master_layer
+	branch = chli-test
 
