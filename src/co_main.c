@@ -550,7 +550,7 @@ co_net_t * co_init (const char * canif, const co_cfg_t * cfg)
    if (net->mbox == NULL)
       goto error2;
 
-   net->timer = os_timer_create (50, co_timer, net, false);
+   net->timer = os_timer_create (250, co_timer, net, false);
    if (net->timer == NULL)
       goto error3;
 
